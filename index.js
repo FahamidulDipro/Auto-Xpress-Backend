@@ -48,7 +48,18 @@ async function run() {
       const updateInventory = req.body;
       const filter = { _id: ObjectId(id) };
       const option = { upsert: true };
-      console.log(id);
+      console.log(updateInventory);
+      const updatedInventoryDoc = {
+        $set: {
+          quantity: updateInventory.remainingQuantity,
+        },
+      };
+      const result = await inventoryCollection.updateOne(
+        filter,
+        updatedInventoryDoc,
+        option
+      );
+      res.send(result);
     });
   } finally {
   }
