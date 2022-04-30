@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
 
@@ -34,6 +34,21 @@ async function run() {
       const cursor = inventoryCollection.find(query);
       const inventories = await cursor.toArray();
       res.send(inventories);
+    });
+    //Getting the specific inventory for updating
+    app.get("/inventories/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await inventoryCollection.findOne(query);
+      res.send(result);
+    });
+    //Updating Inventory
+    app.put("/inventories/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateInventory = req.body;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      console.log(id);
     });
   } finally {
   }
