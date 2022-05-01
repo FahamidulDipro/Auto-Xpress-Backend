@@ -30,9 +30,18 @@ async function run() {
       .collection("inventory");
     //Displaying all inventory collection
     app.get("/inventories", async (req, res) => {
+      console.log('query',req.query);
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
       const query = {};
       const cursor = inventoryCollection.find(query);
-      const inventories = await cursor.toArray();
+      let inventories;
+      if(page||size){
+        inventories = await cursor.skip(page*size).limit(size).toArray();
+      }else{
+         inventories = await cursor.toArray();
+      }
+     
       res.send(inventories);
     });
     //Getting the specific inventory for updating
@@ -66,6 +75,15 @@ async function run() {
       const addedItem = req.body;
       const result = await inventoryCollection.insertOne(addedItem);
       res.send(result);
+    });
+
+    //For Pagination
+    app.get("/itemCount", async (req, res) => {
+   
+      const query = {};
+      const cursor = inventoryCollection.find(query);
+      const count = await inventoryCollection.estimatedDocumentCount();
+      res.send({ count });
     });
   } finally {
   }
