@@ -61,6 +61,12 @@ async function run() {
       );
       res.send(result);
     });
+    //Adding an item
+    app.post("/inventories", async (req, res) => {
+      const addedItem = req.body;
+      const result = await inventoryCollection.insertOne(addedItem);
+      res.send(result);
+    });
   } finally {
   }
 }
