@@ -99,6 +99,7 @@ async function run() {
         img: selectedItem.img,
         quantity: selectedItem.quantity,
         price: selectedItem.price,
+        shortDescription: selectedItem.shortDescription,
         email: selectedItem.email,
       };
       const foundItemCursor = selectedItemCollection.find(doc);
@@ -117,6 +118,16 @@ async function run() {
       const cursor = selectedItemCollection.find(query);
       const selectedItems = await cursor.toArray();
       res.send(selectedItems);
+    });
+
+    //Deleting any Item from My Items page
+    app.delete("/deleteItem/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      console.log(query);
+      const result = await selectedItemCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
