@@ -129,6 +129,14 @@ async function run() {
       const result = await selectedItemCollection.deleteOne(query);
       res.send(result);
     });
+
+    //Deleting item from Manage Inventory page
+    app.delete("/deleteFromInventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await inventoryCollection.deleteOne(query);
+      res.send(result);
+    });
   } finally {
   }
 }
