@@ -30,18 +30,21 @@ async function run() {
       .collection("inventory");
     //Displaying all inventory collection
     app.get("/inventories", async (req, res) => {
-      console.log('query',req.query);
+      console.log("query", req.query);
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
       const query = {};
       const cursor = inventoryCollection.find(query);
       let inventories;
-      if(page||size){
-        inventories = await cursor.skip(page*size).limit(size).toArray();
-      }else{
-         inventories = await cursor.toArray();
+      if (page || size) {
+        inventories = await cursor
+          .skip(page * size)
+          .limit(size)
+          .toArray();
+      } else {
+        inventories = await cursor.toArray();
       }
-     
+
       res.send(inventories);
     });
     //Getting the specific inventory for updating
@@ -79,11 +82,41 @@ async function run() {
 
     //For Pagination
     app.get("/itemCount", async (req, res) => {
-   
       const query = {};
       const cursor = inventoryCollection.find(query);
       const count = await inventoryCollection.estimatedDocumentCount();
       res.send({ count });
+    });
+
+    const selectedItemCollection = client
+      .db("auto-xpress")
+      .collection("selected-items");
+    //Adding Unique Items from the Inventory to My items
+    app.post("/selectedItems", async (req, res) => {
+      const selectedItem = req.body;
+      const doc = {
+        name: selectedItem.name,
+        img: selectedItem.img,
+        quantity: selectedItem.quantity,
+        price: selectedItem.price,
+        email: selectedItem.email,
+      };
+      const foundItemCursor = selectedItemCollection.find(doc);
+      const foundItem = await foundItemCursor.toArray();
+      console.log(foundItem.length);
+      if (foundItem.length !== 0) {
+        console.log("Item already exists");
+      } else {
+        const result = await selectedItemCollection.insertOne(doc);
+        res.send(result);
+      }
+    });
+    //Getting the selected items
+    app.get("/selectedItems", async (req, res) => {
+      const query = {};
+      const cursor = selectedItemCollection.find(query);
+      const selectedItems = await cursor.toArray();
+      res.send(selectedItems);
     });
   } finally {
   }
