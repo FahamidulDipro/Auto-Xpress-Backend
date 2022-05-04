@@ -3,11 +3,29 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const app = express();
 //Middleware
 app.use(cors());
 app.use(express.json());
+
+//Middletier
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: "Unauthorized Access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(403).send({ message: "Forbidden Accesss" });
+    }
+    console.log("Decoded", decoded);
+    req.decoded = decoded;
+    next();
+  });
+}
 
 app.get("/", (req, res) => {
   res.send("Auto Xpress Server Connected!");
@@ -30,6 +48,7 @@ async function run() {
       .collection("inventory");
     //Displaying all inventory collection
     app.get("/inventories", async (req, res) => {
+      // const decodedEmail = req.decoded.email;
       console.log("query", req.query);
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
@@ -113,11 +132,17 @@ async function run() {
       }
     });
     //Getting the selected items
-    app.get("/selectedItems", async (req, res) => {
-      const query = {};
-      const cursor = selectedItemCollection.find(query);
-      const selectedItems = await cursor.toArray();
-      res.send(selectedItems);
+    app.get("/selectedItems", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = {};
+        const cursor = selectedItemCollection.find(query);
+        const selectedItems = await cursor.toArray();
+        res.send(selectedItems);
+      } else {
+        // res.status(403).send({ message: "Forbidden Access!" });
+      }
     });
 
     //Deleting any Item from My Items page
@@ -136,6 +161,15 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const result = await inventoryCollection.deleteOne(query);
       res.send(result);
+    });
+
+    //Get JWT tokens
+    app.post("/getToken", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "24h",
+      });
+      res.send({ token });
     });
   } finally {
   }
