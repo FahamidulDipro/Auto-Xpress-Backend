@@ -166,11 +166,21 @@ async function run() {
     //Get JWT tokens
     app.post("/getToken", async (req, res) => {
       const user = req.body;
+      console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "24h",
       });
       res.send({ token });
     });
+    // //Get JWT for Google Login
+    // app.post("/getTokenGoogleLogin", async (req, res) => {
+    //   const email = req.body;
+    //   console.log(email);
+    //   const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "24h",
+    //   });
+    //   res.send({ token });
+    // });
   } finally {
   }
 }
