@@ -140,15 +140,13 @@ async function run() {
         const cursor = selectedItemCollection.find(query);
         const selectedItems = await cursor.toArray();
         res.send(selectedItems);
-      } else {
-        // res.status(403).send({ message: "Forbidden Access!" });
       }
     });
 
     //Deleting any Item from My Items page
     app.delete("/deleteItem/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const query = { _id: ObjectId(id) };
       console.log(query);
       const result = await selectedItemCollection.deleteOne(query);
@@ -166,21 +164,11 @@ async function run() {
     //Get JWT tokens
     app.post("/getToken", async (req, res) => {
       const user = req.body;
-      console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "24h",
       });
       res.send({ token });
     });
-    // //Get JWT for Google Login
-    // app.post("/getTokenGoogleLogin", async (req, res) => {
-    //   const email = req.body;
-    //   console.log(email);
-    //   const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET, {
-    //     expiresIn: "24h",
-    //   });
-    //   res.send({ token });
-    // });
   } finally {
   }
 }
