@@ -3,18 +3,17 @@ const { getinventoryItems } = require("../controllers/Inventory.controller");
 const {
   getProducts,
   createProducts,
- 
-
- 
   updateProduct,
   bulkUpdateProduct,
   deleteProduct,
+  bulkDeleteProduct,
 } = require("../controllers/Product.controller");
 const { getSelectedItems, insertSelectedItems } = require("../controllers/SelectedItems.controller");
 const router = express.Router();
 
 router.route("/products").get(getProducts).post(createProducts);
 router.route("/bulk-update").patch(bulkUpdateProduct)
+router.route("/bulk-delete").delete(bulkDeleteProduct)
 router.route("/delete/:id").delete(deleteProduct)
 router.route("/products/:id").patch(updateProduct);
 router.route("/selectedItems").get(getSelectedItems).post(insertSelectedItems)
