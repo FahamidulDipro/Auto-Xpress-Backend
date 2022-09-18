@@ -28,12 +28,12 @@ exports.bulkUpdateProductService = async (data) => {
   data.ids.forEach((p) => {
     products.push(Product.updateOne({ _id: p.id }, p.data));
   });
-  const result = rPromise.all(products);
+  const result = Promise.all(products);
   return result;
 };
 
-//Get Inventory Items
-exports.getInventoryService = async () => {
-  const inventory = await Inventory.find();
-  return inventory;
+//Deleting Service
+exports.deleteProductService = async (dataId) => {
+  const result = await Product.deleteOne({ _id: dataId });
+  return result;
 };
