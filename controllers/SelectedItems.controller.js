@@ -3,6 +3,7 @@
 const {
   getSelectedItemsService,
   insertSelectedItemsService,
+  deleteSelectedItemService,
 } = require("../services/SelectedItems.service");
 
 exports.getSelectedItems = async (req, res, next) => {
@@ -27,6 +28,25 @@ exports.insertSelectedItems = async (req, res, next) => {
     res.status(400).json({
       status: "Failed",
       message: "Data is not inserted",
+      error: error.message,
+    });
+  }
+};
+
+//Deleting Selected Items
+exports.deleteSelectedItem = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const deletedSelectedItem = await deleteSelectedItemService(id);
+    res.status(200).json({
+      status: "Success",
+      message: "Data deleted from Selected Items successfully!",
+      data: deletedSelectedItem,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "Failed",
+      message: "Data is not deleted",
       error: error.message,
     });
   }

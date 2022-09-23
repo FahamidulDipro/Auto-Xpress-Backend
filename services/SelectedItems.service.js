@@ -13,3 +13,8 @@ exports.insertSelectedItemsService = async (data) => {
   console.log(item);
   return item;
 };
+//Delete Selected Item Service
+exports.deleteSelectedItemService = async (dataId) => {
+  const result = await SelectedItems.deleteOne({ _id: dataId });
+  return result;
+};
